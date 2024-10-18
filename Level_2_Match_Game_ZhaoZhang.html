@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>The Match Game</title>
+		<style>
+			body {
+				background-color: black;
+				text-align: center;
+				color: white;
+			}
+			button {
+				width: 150px;
+				height: 150px;
+				font-size: 85px;
+				font-weight: bold;
+				font-family: Comic Sans;
+				border-color: gray;
+				border-width: 25px;
+			}
+			img {
+				width: 100px;
+				height: 100px;
+				padding: 0;
+				margin: 0;
+				position: relative;
+				right: 5px;
+				vertical-align: -22%;
+			}
+			a {
+				text-align: center;
+				color: white;
+				font-size: 25px;
+			}
+		</style>
+		<script>
+			let gScore = 0;
+			let gScoreID;
+			let gButtons;
+			let gWinNum;
+			let gSelectedIndexes = [];
+			let gFruits = ['kiwi', 'banana', 'pineapple', 'mango', 'strawberry', 'lemon', 'orange', 'watermelon'];
+			let gSolvedPairs = [];
+
+			function init() {
+				gButtons = [
+					document.getElementById("a1id"),
+					document.getElementById("a2id"),
+					document.getElementById("a3id"),
+					document.getElementById("a4id"),
+					document.getElementById("b1id"),
+					document.getElementById("b2id"),
+					document.getElementById("b3id"),
+					document.getElementById("b4id"),
+					document.getElementById("c1id"),
+					document.getElementById("c2id"),
+					document.getElementById("c3id"),
+					document.getElementById("c4id"),
+					document.getElementById("d1id"),
+					document.getElementById("d2id"),
+					document.getElementById("d3id"),
+					document.getElementById("d4id")
+				];
+				gScoreID = document.getElementById("scoreOutput");
+				gScore = 0;
+				resetButtons();
+			}
+
+			function shuffleArray(array) {
+				for (let i = array.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[array[i], array[j]] = [array[j], array[i]];
+				}
+			}
+
+			function reveal(buttonId) {
+				const button = document.getElementById(buttonId);
+				const buttonIndex = gButtons.indexOf(button);
+				if (gSolvedPairs.includes(buttonIndex) || gSelectedIndexes.length >= 2 || button.innerHTML !== "?") {
+					return;
+				}
+				button.innerHTML = `<img src='${gFruits[Math.floor(buttonIndex / 2)]}.png'>`;
+				gSelectedIndexes.push(buttonIndex);
+				if (gSelectedIndexes.length === 2) {
+					gButtons.forEach(btn => btn.disabled = true);
+					const [firstIndex, secondIndex] = gSelectedIndexes;
+					if (Math.floor(firstIndex / 2) === Math.floor(secondIndex / 2)) {
+						gWinNum++;
+						gSolvedPairs.push(firstIndex, secondIndex);
+						gButtons[firstIndex].disabled = true;
+						gButtons[secondIndex].disabled = true;
+						gWinNum === gFruits.length ? alert("CONGRATS YOU WIN") : null
+					} else {
+						gButtons.forEach(btn => btn.disabled = true);
+						setTimeout(function() {
+							gButtons[firstIndex].innerHTML = "?";
+							gButtons[secondIndex].innerHTML = "?";
+							gSelectedIndexes = []; 
+							gButtons.forEach(btn => btn.disabled = false);
+							gSolvedPairs.forEach(btn => gButtons[btn].disabled = true);
+						}, 1000);
+					}
+					gSelectedIndexes = [];
+					gButtons.forEach(btn => btn.disabled = false);
+				}
+				gSolvedPairs.forEach(btn => gButtons[btn].disabled = true);
+				gScore++;
+				displayScore();
+			}
+
+			function displayScore() {
+				gScoreID.innerHTML = `Score: ${gScore}`;
+			}
+
+			function resetButtons() {
+				shuffleArray(gButtons);
+				for (let i = 0; i < gButtons.length; i++) {
+					gButtons[i].innerHTML = "?";
+					gButtons[i].disabled = false;
+				}
+				gSelectedIndexes = [];
+				gSolvedPairs = [];
+				gWinNum = 0;
+				gScore = 0;
+				displayScore();
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<h1 style="font-size: 75px; font-weight: bold;">The Match Game</h1>
+		<div></div>
+		<div>
+			<button id="a1id" onclick="reveal('a1id');">?</button>
+			<button id="a2id" onclick="reveal('a2id');">?</button>
+			<button id="a3id" onclick="reveal('a3id');">?</button>
+			<button id="a4id" onclick="reveal('a4id');">?</button>
+		</div>
+		<div>
+			<button id="b1id" onclick="reveal('b1id');">?</button>
+			<button id="b2id" onclick="reveal('b2id');">?</button>
+			<button id="b3id" onclick="reveal('b3id');">?</button>
+			<button id="b4id" onclick="reveal('b4id');">?</button>
+		</div>
+		<div>
+			<button id="c1id" onclick="reveal('c1id');">?</button>
+			<button id="c2id" onclick="reveal('c2id');">?</button>
+			<button id="c3id" onclick="reveal('c3id');">?</button>
+			<button id="c4id" onclick="reveal('c4id');">?</button>
+		</div>
+		<div>
+			<button id="d1id" onclick="reveal('d1id');">?</button>
+			<button id="d2id" onclick="reveal('d2id');">?</button>
+			<button id="d3id" onclick="reveal('d3id');">?</button>
+			<button id="d4id" onclick="reveal('d4id');">?</button>
+		</div>
+		<div id="scoreOutput" style="font-size: 50px;">Score: 0</div>
+		<button style="width: 150px; height: 75px; font-size: 20px; border-width: 10px; font-weight: bold;" onclick="resetButtons();">RESET GAME</button>
+		<div>
+			<a href="https://www.memozor.com/memory-games/memory-game-rules" target="_blank">How to Play</a>
+		</div>
+	</body>
+</html>
